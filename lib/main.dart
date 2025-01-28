@@ -120,7 +120,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/vid.mp4'); // Assurez-vous d'avoir la vidéo dans les assets
+    _controller = VideoPlayerController.asset('assets/vid/vid.mp4'); // Assurez-vous d'avoir la vidéo dans les assets
     _initializeVideoPlayerFuture = _controller.initialize();
 
     // Une fois la vidéo terminée, on passe à l'écran principal
