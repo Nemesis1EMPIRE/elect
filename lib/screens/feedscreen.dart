@@ -37,7 +37,7 @@ class FeedScreen extends StatelessWidget {
                     MaterialPageRoute(
                       builder: (context) => PDFViewScreen(
                         pdfPath: feedItems[index]["pdf"]!,
-                        title: "Document PDF",
+                        pdfName: "Document PDF",
                       ),
                     ),
                   );
