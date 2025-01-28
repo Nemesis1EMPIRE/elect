@@ -6,9 +6,9 @@ import 'package:flutter/services.dart' show rootBundle;
 
 class PDFViewScreen extends StatefulWidget {
   final String pdfPath; // 📌 Ex: "assets/pdfs/document.pdf"
-  final String pdfName; // 📌 Ex: "document.pdf"
+  final String title; // 📌 Ex: "document.pdf"
 
-  const PDFViewScreen({super.key, required this.pdfPath, required this.pdfName});
+  const PDFViewScreen({super.key, required this.pdfPath, required this.title});
 
   @override
   State<PDFViewScreen> createState() => _PDFViewScreenState();
