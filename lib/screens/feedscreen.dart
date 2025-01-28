@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pdf_view_screen.dart'; // 📌 Import du PDF Viewer
+import 'imageview.dart'; // 📌 Import du PDF Viewer
 
 class FeedScreen extends StatelessWidget {
   const FeedScreen({super.key});
