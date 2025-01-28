@@ -64,13 +64,15 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ),
       ),
-      body: IndexedStack(
-        index: _selectedIndex, // 📌 Garde les écrans en mémoire
-        children: _screens,
-      ),
+    
       bottomNavigationBar: BottomNavBar(
         currentIndex: _selectedIndex, // 📌 Passe l’index actif
         onItemTapped: _onItemTapped,  // 📌 Gère le changement d’écran
+      ),
+
+       body: IndexedStack(
+        index: _selectedIndex, // 📌 Garde les écrans en mémoire
+        children: _screens,
       ),
     );
   }
