@@ -40,9 +40,12 @@ class _VideoScreenState extends State<VideoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('décryptage'),
-        backgroundColor: Colors.blueAccent,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(40), // 📌 Réduction de la hauteur de l'AppBar
+        child: AppBar(
+          title: const Text("Décryptage", style: TextStyle(color: Colors.white, fontSize: 18)),
+          backgroundColor: Colors.blue,
+        ),
       ),
       body: Center(
         child: FutureBuilder(
