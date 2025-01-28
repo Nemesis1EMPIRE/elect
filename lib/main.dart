@@ -3,6 +3,10 @@ import 'package:elect241/screens/feedscreen.dart';
 import 'package:elect241/screens/pdfviewer.dart';
 import 'package:elect241/screens/videoscreen.dart';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
+import 'dart:async';
+
+
 
 void main() {
   runApp(const Elect241App());
@@ -15,7 +19,7 @@ class Elect241App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: const SplashScreen(),
+      home: SplashScreen(),
     );
   }
 }
@@ -34,7 +38,7 @@ class _MainScreenState extends State<MainScreen> {
   // 📌 Liste des pages affichées selon l'onglet sélectionné
   final List<Widget> _screens = [
     const PDFViewerSection(),
-    const VideoScreen(),
+    VideoScreen(),
     const FAQScreen(),
     const FeedScreen(),
   ];
