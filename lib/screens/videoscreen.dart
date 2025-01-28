@@ -15,22 +15,30 @@ class VideoScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: PreferredSize(
-  preferredSize: const Size.fromHeight(40), // 📌 Réduit la hauteur (par défaut c'est 56)
-  child: AppBar(
-    title: const Text("Décryptages", style: TextStyle(color: Colors.white)),
-    backgroundColor: Colors.blue,
-  ),
-),
-
+        preferredSize: const Size.fromHeight(40), // 📌 Réduction de l'AppBar
+        child: AppBar(
+          title: const Text("Décryptages", style: TextStyle(color: Colors.white)),
+          backgroundColor: Colors.blue,
+        ),
+      ),
       body: PageView.builder(
         scrollDirection: Axis.horizontal, // 📌 Défilement horizontal
         itemCount: videos.length,
         itemBuilder: (context, index) {
-          return VideoPlayerWidget(videoPath: videos[index]);
+          return VideoPlayerWidget(videoPath: videos[index]); // 📌 Correction
         },
       ),
     );
   }
+}
+
+// 📌 Correction : Ajouter la classe `VideoPlayerWidget`
+class VideoPlayerWidget extends StatefulWidget {
+  final String videoPath;
+  const VideoPlayerWidget({super.key, required this.videoPath});
+
+  @override
+  State<VideoPlayerWidget> createState() => _VideoPlayerWidgetState();
 }
 
 // 📌 Widget pour afficher une vidéo en plein écran avec lecture automatique
@@ -48,7 +56,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
           _controller.play();
         });
       });
-    
+
     // 📌 Relancer la vidéo automatiquement à la fin
     _controller.setLooping(true);
   }
@@ -89,4 +97,3 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
     super.dispose();
   }
 }
-
