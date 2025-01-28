@@ -14,7 +14,7 @@ class VideoScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      aappBar: PreferredSize(
+      appBar: PreferredSize(
   preferredSize: const Size.fromHeight(40), // 📌 Réduit la hauteur (par défaut c'est 56)
   child: AppBar(
     title: const Text("Décryptages", style: TextStyle(color: Colors.white)),
