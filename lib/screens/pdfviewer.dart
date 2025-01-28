@@ -103,7 +103,7 @@ class _PDFViewerSectionState extends State<PDFViewerSection> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => PDFViewerScreen(pdfPath: filePath, pdfName: fileName),
+                          builder: (context) => PDFViewScreen(pdfPath: filePath, pdfName: fileName),
                         ),
                       );
                     },
