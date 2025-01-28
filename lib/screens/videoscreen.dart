@@ -16,9 +16,9 @@ class _VideoScreenState extends State<VideoScreen> {
   void initState() {
     super.initState();
     _controllers = [
-      VideoPlayerController.asset('assets/video.mp4'),
-      VideoPlayerController.asset('assets/video1.mp4'),
-      VideoPlayerController.asset('assets/decryptage.mp4')
+      VideoPlayerController.asset('assets/vid/video.mp4'),
+      VideoPlayerController.asset('assets/vid/video1.mp4'),
+      VideoPlayerController.asset('assets/vid/decryptage.mp4')
     ];
     _initializeVideoPlayerFutures = _controllers.map((controller) {
       controller.setLooping(true); // 📌 Met en boucle
