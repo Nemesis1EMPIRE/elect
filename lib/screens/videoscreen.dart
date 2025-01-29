@@ -20,16 +20,9 @@ class _VideoScreenState extends State<VideoScreen> {
   @override
   void initState() {
     super.initState();
-
-    // Initialisation des contrôleurs vidéo
     _controllers = videoPaths.map((path) => VideoPlayerController.asset(path)).toList();
-    _initializeControllers = _controllers.map((controller) {
-      return controller.initialize().then((_) {
-        setState(() {}); // 📌 Rafraîchit l'interface après initialisation
-      });
-    }).toList();
+    _initializeControllers = _controllers.map((controller) => controller.initialize()).toList();
 
-    // Activer la lecture automatique en boucle
     for (var controller in _controllers) {
       controller.setLooping(true);
       controller.setVolume(1.0);
@@ -47,37 +40,33 @@ class _VideoScreenState extends State<VideoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(40), // 📌 Réduction de la hauteur de l'AppBar
-        child: AppBar(
-          title: const Text("Décryptage", style: TextStyle(color: Colors.white, fontSize: 18)),
-          backgroundColor: Colors.blue,
-        ),
+      appBar: AppBar(
+        title: const Text("Décryptage", style: TextStyle(color: Colors.white, fontSize: 18)),
+        backgroundColor: Colors.blue,
       ),
       body: FutureBuilder(
-        future: Future.wait(_initializeControllers), // 📌 Attendre l'initialisation
+        future: Future.wait(_initializeControllers),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return PageView.builder(
-              scrollDirection: Axis.horizontal,
               itemCount: _controllers.length,
               itemBuilder: (context, index) {
+                final controller = _controllers[index];
+
                 return GestureDetector(
                   onTap: () {
                     setState(() {
-                      _controllers[index].value.isPlaying
-                          ? _controllers[index].pause()
-                          : _controllers[index].play();
+                      controller.value.isPlaying ? controller.pause() : controller.play();
                     });
                   },
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
                       AspectRatio(
-                        aspectRatio: _controllers[index].value.aspectRatio,
-                        child: VideoPlayer(_controllers[index]),
+                        aspectRatio: controller.value.aspectRatio,
+                        child: VideoPlayer(controller),
                       ),
-                      if (!_controllers[index].value.isPlaying)
+                      if (!controller.value.isPlaying)
                         const Icon(Icons.play_circle_fill, size: 80, color: Colors.white),
                     ],
                   ),
