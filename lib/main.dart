@@ -105,7 +105,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset(VideoPaths)
+    _controller = VideoPlayerController.asset('https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4')
       ..initialize().then((_) {
         setState(() {});
         _controller.play();
