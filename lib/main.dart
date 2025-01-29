@@ -97,11 +97,15 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
+  final List<String> videoPaths = [
+  'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4', // Test URL
+];
+
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/vid/vid.mp4')
+    _controller = VideoPlayerController.asset(VideoPaths)
       ..initialize().then((_) {
         setState(() {});
         _controller.play();
