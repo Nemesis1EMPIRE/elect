@@ -2,82 +2,68 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
 class VideoScreen extends StatefulWidget {
-  const VideoScreen({super.key});
-
   @override
-  _VideoScreenState createState() => _VideoScreenState();
+  _VideoScreen createState() => _VideoScreenState();
 }
 
 class _VideoScreenState extends State<VideoScreen> {
+  List<String> videoPaths = [
+    'assets/vid/video1.mp4',
+    'assets/vid/video.mp4',
+  ];
+
   late List<VideoPlayerController> _controllers;
-  late List<Future<void>> _initializeVideoPlayerFutures;
+  late List<Future<void>> _initializeControllers;
 
   @override
   void initState() {
     super.initState();
-    _controllers = [
-      VideoPlayerController.asset('assets/vid/video.mp4'),
-      VideoPlayerController.asset('assets/vid/video1.mp4'),
-      VideoPlayerController.asset('assets/vid/decryptage.mp4')
-    ];
-    _initializeVideoPlayerFutures = _controllers.map((controller) {
-      controller.setLooping(true); // 📌 Met en boucle
-      return controller.initialize().then((_) {
-        setState(() {}); // 📌 Met à jour l'UI après initialisation
-      });
-    }).toList();
+
+    // Initialisation des contrôleurs vidéo
+    _controllers = videoPaths.map((path) => VideoPlayerController.asset(path)).toList();
+    _initializeControllers = _controllers.map((controller) => controller.initialize()).toList();
+
+    // Activer la lecture en boucle et le son pour chaque vidéo
+    for (var controller in _controllers) {
+      controller.setLooping(true);
+      controller.setVolume(1.0);
+    }
   }
 
   @override
   void dispose() {
+    // Libérer la mémoire des vidéos
     for (var controller in _controllers) {
       controller.dispose();
     }
-    super.dispose(); // 📌 `super.dispose()` doit être appelé en dernier
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(40), // 📌 Réduction de l'AppBar
-        child: AppBar(
-          title: const Text("Décryptage", style: TextStyle(color: Colors.white, fontSize: 18)),
-          backgroundColor: Colors.blue,
-        ),
+      appBar: AppBar(
+        title: Text('Lecteur Vidéo Défilant'),
+        backgroundColor: Colors.blueAccent,
       ),
       body: FutureBuilder(
-        future: Future.wait(_initializeVideoPlayerFutures), // 📌 Attente de toutes les vidéos
+        future: Future.wait(_initializeControllers), // Attendre l'initialisation de toutes les vidéos
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return PageView.builder(
-              scrollDirection: Axis.horizontal, // 📌 Swipe horizontal
+              scrollDirection: Axis.horizontal,
               itemCount: _controllers.length,
               itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _controllers[index].value.isPlaying
-                          ? _controllers[index].pause()
-                          : _controllers[index].play();
-                    });
-                  },
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      AspectRatio(
-                        aspectRatio: _controllers[index].value.aspectRatio,
-                        child: VideoPlayer(_controllers[index]),
-                      ),
-                      if (!_controllers[index].value.isPlaying)
-                        const Icon(Icons.play_circle_fill, size: 80, color: Colors.white),
-                    ],
+                return Center(
+                  child: AspectRatio(
+                    aspectRatio: _controllers[index].value.aspectRatio,
+                    child: VideoPlayer(_controllers[index]),
                   ),
                 );
               },
             );
           } else {
-            return const Center(child: CircularProgressIndicator());
+            return Center(child: CircularProgressIndicator()); // Affiche un loader pendant le chargement
           }
         },
       ),
