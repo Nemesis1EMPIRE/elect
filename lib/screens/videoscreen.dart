@@ -48,7 +48,7 @@ class _VideoScreenState extends State<VideoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Lecteur Vidéo Défilant'),
+        title: const Text('Décryptage'),
         backgroundColor: Colors.blueAccent,
       ),
       body: FutureBuilder(
