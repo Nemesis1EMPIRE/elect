@@ -6,8 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:async';
 
-
-
 void main() {
   runApp(const Elect241App());
 }
@@ -24,7 +22,6 @@ class Elect241App extends StatelessWidget {
   }
 }
 
-
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -35,10 +32,9 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  // 📌 Liste des pages affichées selon l'onglet sélectionné
   final List<Widget> _screens = [
     const PDFViewerSection(),
-    VideoScreen(),
+    const VideoScreen(), // Ajout du `const` pour optimiser
     const FAQScreen(),
     const FeedScreen(),
   ];
@@ -52,37 +48,23 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(50), // 📌 Réduction de la hauteur de l'AppBar
-        child: AppBar(
-          elevation: 4,
-          backgroundColor: Colors.white,
-          title: Row(
-            children: [
-              Image.asset(
-                "assets/banner.png",
-                height: 40, // 📌 Ajuste la taille de l’image
-              ),
-              const SizedBox(width: 10),
-            ],
-          ),
-        ),
+      appBar: AppBar(
+        elevation: 4,
+        backgroundColor: Colors.white,
+        title: Image.asset("assets/banner.png", height: 40),
       ),
-    
       bottomNavigationBar: BottomNavBar(
-        currentIndex: _selectedIndex, // 📌 Passe l’index actif
-        onItemTapped: _onItemTapped,  // 📌 Gère le changement d’écran
+        currentIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
-
-       body: IndexedStack(
-        index: _selectedIndex, // 📌 Garde les écrans en mémoire
+      body: IndexedStack(
+        index: _selectedIndex,
         children: _screens,
       ),
     );
   }
 }
 
-// 📌 Bottom Navigation Bar placée sous l'AppBar
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onItemTapped;
@@ -93,7 +75,7 @@ class BottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
-      currentIndex: currentIndex, // 📌 Définit l'élément actif
+      currentIndex: currentIndex,
       selectedItemColor: Colors.blue,
       unselectedItemColor: Colors.grey,
       items: const [
@@ -102,11 +84,10 @@ class BottomNavBar extends StatelessWidget {
         BottomNavigationBarItem(icon: Icon(Icons.chat), label: "FAQ"),
         BottomNavigationBarItem(icon: Icon(Icons.image_aspect_ratio), label: "Actualités"),
       ],
-      onTap: onItemTapped, // 📌 Appelle la fonction de navigation
+      onTap: onItemTapped,
     );
   }
 }
-
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -120,25 +101,21 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset('assets/vid/vid.mp4'); // Assurez-vous d'avoir la vidéo dans les assets
-    _initializeVideoPlayerFuture = _controller.initialize();
+    _controller = VideoPlayerController.asset('assets/vid/vid.mp4')
+      ..initialize().then((_) {
+        setState(() {});
+        _controller.play();
+      });
 
-    // Une fois la vidéo terminée, on passe à l'écran principal
-    _controller.setLooping(false); // Ne pas boucler la vidéo
-    _controller.play();
-
-    Timer(Duration(seconds: 5), () { // Ajustez le temps pour correspondre à la durée de la vidéo
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => MainScreen()),
-      );
+    Timer(const Duration(seconds: 5), () {
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreen()));
     });
   }
 
   @override
   void dispose() {
-    super.dispose();
     _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -146,22 +123,13 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: Colors.black,
       body: Center(
-        child: FutureBuilder(
-          future: _initializeVideoPlayerFuture,
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              return AspectRatio(
+        child: _controller.value.isInitialized
+            ? AspectRatio(
                 aspectRatio: _controller.value.aspectRatio,
                 child: VideoPlayer(_controller),
-              );
-            } else {
-              return CircularProgressIndicator();
-            }
-          },
-        ),
+              )
+            : const CircularProgressIndicator(),
       ),
     );
   }
 }
-
-
