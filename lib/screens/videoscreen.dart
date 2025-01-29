@@ -1,6 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+void main() {
+  runApp(const MyApp());
+}
 
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: VideoScreen(),
+    );
+  }
+}
 class VideoScreen extends StatefulWidget {
   const VideoScreen({super.key});
 
@@ -20,9 +39,16 @@ class _VideoScreenState extends State<VideoScreen> {
   @override
   void initState() {
     super.initState();
-    _controllers = videoPaths.map((path) => VideoPlayerController.asset(path)).toList();
-    _initializeControllers = _controllers.map((controller) => controller.initialize()).toList();
 
+    // Initialisation des contrôleurs vidéo
+    _controllers = videoPaths.map((path) => VideoPlayerController.asset(path)).toList();
+    _initializeControllers = _controllers.map((controller) {
+      return controller.initialize().then((_) {
+        setState(() {}); // 📌 Rafraîchit l'interface après initialisation
+      });
+    }).toList();
+
+    // Activer la lecture automatique en boucle
     for (var controller in _controllers) {
       controller.setLooping(true);
       controller.setVolume(1.0);
@@ -41,32 +67,33 @@ class _VideoScreenState extends State<VideoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Décryptage", style: TextStyle(color: Colors.white, fontSize: 18)),
-        backgroundColor: Colors.blue,
+        title: const Text('Lecteur Vidéo Défilant'),
+        backgroundColor: Colors.blueAccent,
       ),
       body: FutureBuilder(
-        future: Future.wait(_initializeControllers),
+        future: Future.wait(_initializeControllers), // 📌 Attendre l'initialisation
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             return PageView.builder(
+              scrollDirection: Axis.horizontal,
               itemCount: _controllers.length,
               itemBuilder: (context, index) {
-                final controller = _controllers[index];
-
                 return GestureDetector(
                   onTap: () {
                     setState(() {
-                      controller.value.isPlaying ? controller.pause() : controller.play();
+                      _controllers[index].value.isPlaying
+                          ? _controllers[index].pause()
+                          : _controllers[index].play();
                     });
                   },
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
                       AspectRatio(
-                        aspectRatio: controller.value.aspectRatio,
-                        child: VideoPlayer(controller),
+                        aspectRatio: _controllers[index].value.aspectRatio,
+                        child: VideoPlayer(_controllers[index]),
                       ),
-                      if (!controller.value.isPlaying)
+                      if (!_controllers[index].value.isPlaying)
                         const Icon(Icons.play_circle_fill, size: 80, color: Colors.white),
                     ],
                   ),
