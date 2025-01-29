@@ -34,7 +34,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = [
     const PDFViewerSection(),
-    const VideoScreen(), // Ajout du `const` pour optimiser
+    ChewieVideoPlayer(videoPath: 'assets/vid/video1.mp4')
     const FAQScreen(),
     const FeedScreen(),
   ];
