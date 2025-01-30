@@ -13,7 +13,7 @@ class VideoScreen extends StatefulWidget {
 
 class _VideoScreenState extends State<VideoScreen> {
   late VideoPlayerController _controller;
-  String? videoPath; // 📌 Stocke le chemin local de la vidéo
+  String? videoPath;
 
   @override
   void initState() {
@@ -22,7 +22,6 @@ class _VideoScreenState extends State<VideoScreen> {
   }
 
   Future<void> _loadVideo() async {
-    // 📌 Copier la vidéo depuis les assets vers le stockage temporaire
     final tempDir = await getTemporaryDirectory();
     final tempVideoFile = File("${tempDir.path}/video.mp4");
 
@@ -35,6 +34,7 @@ class _VideoScreenState extends State<VideoScreen> {
       videoPath = tempVideoFile.path;
       _controller = VideoPlayerController.file(tempVideoFile)
         ..initialize().then((_) {
+          print("Vidéo chargée : ${_controller.value.size}"); // 🔥 Vérifier si la vidéo est chargée
           setState(() {});
           _controller.play();
         });
@@ -54,11 +54,17 @@ class _VideoScreenState extends State<VideoScreen> {
       body: videoPath == null
           ? const Center(child: CircularProgressIndicator())
           : Center(
-              child: AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
+              child: SizedBox(
+                height: 300, // 🔥 Définit une hauteur pour éviter une vidéo invisible
+                child: AspectRatio(
+                  aspectRatio: _controller.value.aspectRatio > 0
+                      ? _controller.value.aspectRatio
+                      : 16 / 9, // 🔥 Si `0.0`, utiliser 16:9
+                  child: VideoPlayer(_controller),
+                ),
               ),
             ),
     );
   }
 }
+
