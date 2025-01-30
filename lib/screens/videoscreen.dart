@@ -34,7 +34,7 @@ class _VideoScreenState extends State<VideoScreen> {
       videoPath = tempVideoFile.path;
       _controller = VideoPlayerController.file(tempVideoFile)
         ..initialize().then((_) {
-          print("Vidéo chargée : ${_controller.value.size}"); // 🔥 Vérifier si la vidéo est chargée
+          print("Vidéo chargée : ${_controller.value.size}"); // 🔥 Vérifier si la vidéo est bien chargée
           setState(() {});
           _controller.play();
         });
@@ -67,4 +67,3 @@ class _VideoScreenState extends State<VideoScreen> {
     );
   }
 }
-
