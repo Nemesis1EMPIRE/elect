@@ -53,7 +53,7 @@ class _MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         elevation: 4,
         backgroundColor: Colors.white,
-        title: Image.asset("assets/banner.png", height: 40),
+        title: Image.asset("assets/banner.png", height: 60),
       ),
       bottomNavigationBar: BottomNavBar(
         currentIndex: _selectedIndex,
