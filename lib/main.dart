@@ -37,7 +37,7 @@ class _MainScreenState extends State<MainScreen> {
     const PDFViewerSection(),
     VideoScreen(), // Define this class to fix the issue
     const FAQScreen(),
-    const FeedScreen(), // Define this class to fix the issue
+    FeedScreen(), // Define this class to fix the issue
   ];
 
   void _onItemTapped(int index) {
