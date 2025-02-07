@@ -97,23 +97,34 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
+class SplashScreen extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
 class _SplashScreenState extends State<SplashScreen> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
 
-  final String videoUrl = 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'; // Test URL
+  final String videoUrl = 'assets/vid/'; // Test URL
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(videoUrl)
-      ..initialize().then((_) {
-        setState(() {});
-        _controller.play();
-      });
+    _controller = VideoPlayerController.network(videoUrl);
+    _initializeVideoPlayerFuture = _controller.initialize();
+
+    Future.delayed(Duration.zero, () async {
+      await _initializeVideoPlayerFuture;
+      _controller.play();
+      setState(() {});
+    });
 
     Timer(const Duration(seconds: 5), () {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreen()));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MainScreen()),
+      );
     });
   }
 
