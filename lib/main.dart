@@ -43,7 +43,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = [
     FeedScreen(), // Define this class to fix the issue
-    VideoScreen(), // Define this class to fix the issue
+    VideoListScreen(), // Define this class to fix the issue
     const FAQScreen(),
     const PDFViewerSection(),    
   ];
