@@ -6,7 +6,6 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:elect241/screens/components/imageview.dart';
 import 'dart:io';
 
 void main() {
@@ -97,11 +96,6 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class SplashScreen extends StatefulWidget {
-  @override
-  _SplashScreenState createState() => _SplashScreenState();
-}
-
 class _SplashScreenState extends State<SplashScreen> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
@@ -111,7 +105,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(videoUrl);
+    _controller = VideoPlayerController.asset(videoUrl);
     _initializeVideoPlayerFuture = _controller.initialize();
 
     Future.delayed(Duration.zero, () async {
@@ -268,7 +262,6 @@ class _FAQScreenState extends State<FAQScreen> {
   }
 }
 
-
 class PDFViewerSection extends StatefulWidget {
   const PDFViewerSection({super.key});
 
@@ -320,206 +313,76 @@ class _PDFViewerSectionState extends State<PDFViewerSection> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-     appBar: PreferredSize(
-  preferredSize: const Size.fromHeight(40), // 📌 Réduction de la hauteur de l'AppBar
-  child: AppBar(
-    title: !_isSearching
-        ? const Text("Lois électorales", style: TextStyle(color: Colors.white, fontSize: 18))
-        : TextField(
-            decoration: const InputDecoration(
-              hintText: "Rechercher un PDF...",
-              border: InputBorder.none,
-            ),
-            onChanged: _filterFiles,
-          ),
-    backgroundColor: Colors.blue,
-    elevation: 0,
-    actions: [
-      IconButton(
-        onPressed: () {
-          setState(() {
-            _isSearching = !_isSearching;
-            _filteredFiles = _pdfFiles;
-          });
-        },
-        icon: Icon(_isSearching ? Icons.cancel : Icons.search),
-      )
-    ],
-  ),
-),
-
-      body: _filteredFiles.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: _filteredFiles.length,
-              itemBuilder: (context, index) {
-                String filePath = _filteredFiles[index];
-                String fileName = path.basename(filePath);
-                return Card(
-                  color: Colors.white,
-                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  child: ListTile(
-                    title: Text(fileName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    leading: const Icon(Icons.picture_as_pdf, color: Colors.yellow, size: 30),
-                    trailing: const Icon(Icons.arrow_forward_ios, size: 18),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PDFViewScreen(pdfPath: filePath, pdfName: fileName),
-                        ),
-                      );
-                    },
-                  ),
-                );
-              },
-            ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: getFiles,
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        child: const Icon(Icons.refresh),
-      ),
-    );
-  }
-}
-
-
-// Define VideoScreen and FeedScreen if not defined already.
-
-class VideoScreen extends StatefulWidget {
-  const VideoScreen({super.key});
-
-  @override
-  _VideoScreenState createState() => _VideoScreenState();
-}
-
-class _VideoScreenState extends State<VideoScreen> {
-  late VideoPlayerController _controller;
-  String? videoPath;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadVideo();
-  }
-
-  Future<void> _loadVideo() async {
-    final tempDir = await getTemporaryDirectory();
-    final tempVideoFile = File("${tempDir.path}/video.mp4");
-
-    if (!await tempVideoFile.exists()) {
-      final byteData = await rootBundle.load("assets/vid/video.mp4");
-      await tempVideoFile.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
-    }
-
-    setState(() {
-      videoPath = tempVideoFile.path;
-      _controller = VideoPlayerController.file(tempVideoFile)
-        ..initialize().then((_) {
-          print("Vidéo chargée : ${_controller.value.size}"); // 🔥 Vérifier si la vidéo est bien chargée
-          setState(() {});
-          _controller.play();
-        });
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Lecture Vidéo")),
-      body: videoPath == null
-          ? const Center(child: CircularProgressIndicator())
-          : Center(
-              child: SizedBox(
-                height: 300, // 🔥 Définit une hauteur pour éviter une vidéo invisible
-                child: AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio > 0
-                      ? _controller.value.aspectRatio
-                      : 16 / 9, // 🔥 Si `0.0`, utiliser 16:9
-                  child: VideoPlayer(_controller),
-                ),
-              ),
-            ),
-    );
-  }
-}
-
-
-
-
-class FeedScreen extends StatelessWidget {
-  const FeedScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // 📌 Liste des images et leurs PDF associés
-    List<Map<String, String>> feedItems = [
-      {"image": "assets/images/election.png", "pdf": "assets/pdfs/date.pdf"},
-      {"image": "assets/images/elect.png", "pdf": "assets/pdfs/elect.pdf"},
-      {"image": "assets/images/all.png", "pdf": "assets/pdfs/elect.pdf"},
-    ];
-
-    return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(40), // 📌 Réduction de la hauteur de l'AppBar
+        preferredSize: const Size.fromHeight(40), 
         child: AppBar(
-          title: const Text("Feed", style: TextStyle(color: Colors.white, fontSize: 18)),
+          title: !_isSearching
+              ? const Text("Lois électorales", style: TextStyle(color: Colors.white, fontSize: 18))
+              : TextField(
+                  decoration: const InputDecoration(
+                    hintText: "Rechercher un PDF...",
+                    border: InputBorder.none,
+                  ),
+                  onChanged: _filterFiles,
+                ),
           backgroundColor: Colors.blue,
+          elevation: 0,
+          actions: [
+            IconButton(
+              onPressed: () {
+                setState(() {
+                  _isSearching = !_isSearching;
+                  _isSearching ? _filterFiles("") : _filterFiles("");
+                });
+              },
+              icon: const Icon(Icons.search, color: Colors.white),
+            ),
+          ],
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: ListView.builder(
-          itemCount: feedItems.length,
-          itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 15), // 📌 Espacement entre les images
-              child: GestureDetector(
-                onTap: () {
-                  // 📌 Navigation vers la page PDF
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => PDFViewScreen(
-                        pdfPath: feedItems[index]["pdf"]!,
-                        title: "Document PDF",
-                      ),
-                    ),
-                  );
-                },
-                child: Container(
-                  height: 150, // 📌 Hauteur du conteneur pour l'image
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 5,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  clipBehavior: Clip.antiAlias,
-                  child: Image.asset(
-                    feedItems[index]["image"]!,
-                    width: double.infinity, // 📌 Largeur adaptable
-                    height: 150, // 📌 Hauteur fixe pour uniformiser
-                    fit: BoxFit.cover, // 📌 Remplissage optimal sans distorsion
-                  ),
+      body: ListView.builder(
+        itemCount: _filteredFiles.length,
+        itemBuilder: (context, index) {
+          String pdfFile = _filteredFiles[index];
+          return ListTile(
+            title: Text(path.basename(pdfFile)),
+            onTap: () async {
+              String pdfPath = await _getFilePath(pdfFile);
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PDFViewerPage(filePath: pdfPath),
                 ),
-              ),
-            );
-          },
-        ),
+              );
+            },
+          );
+        },
+      ),
+    );
+  }
+
+  /// 📌 Copie un fichier PDF de l'asset à un emplacement temporaire
+  Future<String> _getFilePath(String assetPath) async {
+    final tempDir = await getTemporaryDirectory();
+    final file = File('${tempDir.path}/${path.basename(assetPath)}');
+    final data = await rootBundle.load(assetPath);
+    final bytes = data.buffer.asUint8List();
+    await file.writeAsBytes(bytes);
+    return file.path;
+  }
+}
+
+class PDFViewerPage extends StatelessWidget {
+  final String filePath;
+
+  const PDFViewerPage({super.key, required this.filePath});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('PDF Viewer')),
+      body: PDFView(
+        filePath: filePath,
       ),
     );
   }
