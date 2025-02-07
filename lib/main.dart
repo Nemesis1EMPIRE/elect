@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:elect241/screens/components/pdfview.dart';
 import 'dart:io';
 
+
 void main() {
   runApp(const Elect241App());
 }
@@ -362,32 +363,7 @@ class _PDFViewerSectionState extends State<PDFViewerSection> {
     );
   }
 
-  /// 📌 Copie un fichier PDF de l'asset à un emplacement temporaire
-  Future<String> _getFilePath(String assetPath) async {
-    final tempDir = await getTemporaryDirectory();
-    final file = File('${tempDir.path}/${path.basename(assetPath)}');
-    final data = await rootBundle.load(assetPath);
-    final bytes = data.buffer.asUint8List();
-    await file.writeAsBytes(bytes);
-    return file.path;
-  }
-}
-
-class PDFViewerPage extends StatelessWidget {
-  final String filePath;
-
-  const PDFViewerPage({super.key, required this.filePath});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('PDF Viewer')),
-      body: PDFView(
-        filePath: filePath,
-      ),
-    );
-  }
-}
+ 
 
 
 class FeedScreen extends StatelessWidget {
