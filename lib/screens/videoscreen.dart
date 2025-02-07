@@ -12,7 +12,7 @@ class VideoScreen extends StatefulWidget {
 }
 
 class _VideoScreenState extends State<VideoScreen> {
-  late VideoPlayerController _controller;
+  VideoPlayerController? _controller;
   String? videoPath;
 
   @override
@@ -22,31 +22,30 @@ class _VideoScreenState extends State<VideoScreen> {
   }
 
   Future<void> _loadVideo() async {
-    final tempDir = await getTemporaryDirectory();
-    final tempVideoFile = File("${tempDir.path}/video.mp4");
+    try {
+      final tempDir = await getTemporaryDirectory();
+      final tempVideoFile = File("${tempDir.path}/video.mp4");
 
-    // Vérifier si la vidéo existe déjà dans le répertoire temporaire
-    if (!await tempVideoFile.exists()) {
-      // Charger la vidéo depuis les assets
-      final byteData = await rootBundle.load("assets/vid/video.mp4");
-      await tempVideoFile.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
+      if (!await tempVideoFile.exists()) {
+        final byteData = await rootBundle.load("assets/vid/video.mp4");
+        await tempVideoFile.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
+      }
+
+      setState(() {
+        videoPath = tempVideoFile.path;
+        _controller = VideoPlayerController.file(tempVideoFile)
+          ..initialize().then((_) {
+            setState(() {}); // Met à jour l'interface après l'initialisation
+          });
+      });
+    } catch (e) {
+      print("Erreur de chargement de la vidéo : $e");
     }
-
-    // Initialiser le contrôleur vidéo une fois le fichier prêt
-    setState(() {
-      videoPath = tempVideoFile.path;
-      _controller = VideoPlayerController.file(tempVideoFile)
-        ..initialize().then((_) {
-          setState(() {});
-          _controller.play();  // Lancer la lecture de la vidéo une fois initialisée
-        });
-    });
   }
 
   @override
   void dispose() {
-    // Libérer les ressources du contrôleur vidéo lors de la destruction de l'écran
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -54,19 +53,48 @@ class _VideoScreenState extends State<VideoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Lecture Vidéo")),
-      body: videoPath == null
-          ? const Center(child: CircularProgressIndicator())  // Afficher un indicateur de chargement
-          : Center(
-              child: SizedBox(
-                height: 300, // Hauteur fixée pour éviter une vidéo invisible
-                child: AspectRatio(
-                  aspectRatio: _controller.value.aspectRatio > 0
-                      ? _controller.value.aspectRatio
-                      : 16 / 9, // Utiliser 16:9 si aspect ratio est 0
-                  child: VideoPlayer(_controller),
-                ),
+      body: Center(
+        child: videoPath == null || _controller == null || !_controller!.value.isInitialized
+            ? const CircularProgressIndicator()
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AspectRatio(
+                    aspectRatio: _controller!.value.aspectRatio > 0
+                        ? _controller!.value.aspectRatio
+                        : 16 / 9,
+                    child: VideoPlayer(_controller!),
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          _controller!.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _controller!.value.isPlaying
+                                ? _controller!.pause()
+                                : _controller!.play();
+                          });
+                        },
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.stop),
+                        onPressed: () {
+                          setState(() {
+                            _controller!.pause();
+                            _controller!.seekTo(Duration.zero);
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ],
               ),
-            ),
+      ),
     );
   }
 }
