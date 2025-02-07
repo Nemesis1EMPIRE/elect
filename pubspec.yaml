@@ -40,8 +40,14 @@ dependencies:
   path_provider: ^2.1.2
   path: ^1.9.0
   chewie: ^1.7.4
+  flutter_launcher_icons: ^0.13.1
 
-
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icon.png"  # Chemin de ton icône
+  adaptive_icon_foreground: "assets/icon.png"
+  adaptive_icon_background: "assets/icon.png"
 
 dev_dependencies:
   flutter_test:
