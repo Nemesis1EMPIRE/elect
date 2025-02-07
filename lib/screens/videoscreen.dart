@@ -25,24 +25,27 @@ class _VideoScreenState extends State<VideoScreen> {
     final tempDir = await getTemporaryDirectory();
     final tempVideoFile = File("${tempDir.path}/video.mp4");
 
+    // Vérifier si la vidéo existe déjà dans le répertoire temporaire
     if (!await tempVideoFile.exists()) {
+      // Charger la vidéo depuis les assets
       final byteData = await rootBundle.load("assets/vid/video.mp4");
       await tempVideoFile.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
     }
 
+    // Initialiser le contrôleur vidéo une fois le fichier prêt
     setState(() {
       videoPath = tempVideoFile.path;
       _controller = VideoPlayerController.file(tempVideoFile)
         ..initialize().then((_) {
-          print("Vidéo chargée : ${_controller.value.size}"); // 🔥 Vérifier si la vidéo est bien chargée
           setState(() {});
-          _controller.play();
+          _controller.play();  // Lancer la lecture de la vidéo une fois initialisée
         });
     });
   }
 
   @override
   void dispose() {
+    // Libérer les ressources du contrôleur vidéo lors de la destruction de l'écran
     _controller.dispose();
     super.dispose();
   }
@@ -52,14 +55,14 @@ class _VideoScreenState extends State<VideoScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text("Lecture Vidéo")),
       body: videoPath == null
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator())  // Afficher un indicateur de chargement
           : Center(
               child: SizedBox(
-                height: 300, // 🔥 Définit une hauteur pour éviter une vidéo invisible
+                height: 300, // Hauteur fixée pour éviter une vidéo invisible
                 child: AspectRatio(
                   aspectRatio: _controller.value.aspectRatio > 0
                       ? _controller.value.aspectRatio
-                      : 16 / 9, // 🔥 Si `0.0`, utiliser 16:9
+                      : 16 / 9, // Utiliser 16:9 si aspect ratio est 0
                   child: VideoPlayer(_controller),
                 ),
               ),
