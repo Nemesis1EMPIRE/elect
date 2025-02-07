@@ -10,6 +10,7 @@ import 'package:elect241/screens/components/pdfview.dart';
 import 'package:elect241/screens/components/imageview.dart';
 import 'package:elect241/screens/videoscreen.dart';
 import 'package:elect241/screens/feedscreen.dart';
+import 'package:elect241/screens/pdfviewer.dart';
 
 import 'dart:io';
 
@@ -268,114 +269,6 @@ class _FAQScreenState extends State<FAQScreen> {
   }
 }
 
-class PDFViewerSection extends StatefulWidget {
-  const PDFViewerSection({super.key});
-
-  @override
-  State<PDFViewerSection> createState() => _PDFViewerSectionState();
-  
-}
-
-class _PDFViewerSectionState extends State<PDFViewerSection> {
-  Future<String> _getFilePath(String assetPath) async {
-  ByteData data = await rootBundle.load(assetPath);
-  List<int> bytes = data.buffer.asUint8List();
-  String dir = (await getTemporaryDirectory()).path;
-  File file = File('$dir/${path.basename(assetPath)}');
-  await file.writeAsBytes(bytes, flush: true);
-  return file.path;
-}
-
-  List<String> _pdfFiles = [];
-  List<String> _filteredFiles = [];
-  bool _isSearching = false;
-
-  @override
-  void initState() {
-    super.initState();
-    getFiles();  // Charge les fichiers PDF au démarrage
-  }
-
-  /// 📌 Charge les fichiers PDF depuis les assets
-  Future<void> getFiles() async {
-    try {
-      // Charge la liste des fichiers déclarés dans `pubspec.yaml`
-      String manifestContent = await rootBundle.loadString('AssetManifest.json');
-      Map<String, dynamic> manifestMap = json.decode(manifestContent);
-
-      List<String> assetPaths = manifestMap.keys
-          .where((String key) => key.endsWith('.pdf'))  // Filtre uniquement les PDF
-          .toList();
-
-      setState(() {
-        _pdfFiles = assetPaths;
-        _filteredFiles = _pdfFiles;
-      });
-    } catch (e) {
-      print("Erreur lors de la récupération des fichiers : $e");
-    }
-  }
-
-  /// 📌 Filtre les fichiers en fonction de la recherche
-  void _filterFiles(String query) {
-    setState(() {
-      _filteredFiles = query.isEmpty
-          ? _pdfFiles
-          : _pdfFiles.where((file) => path.basename(file).toLowerCase().contains(query.toLowerCase())).toList();
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(40), 
-        child: AppBar(
-          title: !_isSearching
-              ? const Text("Lois électorales", style: TextStyle(color: Colors.white, fontSize: 18))
-              : TextField(
-                  decoration: const InputDecoration(
-                    hintText: "Rechercher un PDF...",
-                    border: InputBorder.none,
-                  ),
-                  onChanged: _filterFiles,
-                ),
-          backgroundColor: Colors.blue,
-          elevation: 0,
-          actions: [
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  _isSearching = !_isSearching;
-                  _isSearching ? _filterFiles("") : _filterFiles("");
-                });
-              },
-              icon: const Icon(Icons.search, color: Colors.white),
-            ),
-          ],
-        ),
-      ),
-      body: ListView.builder(
-        itemCount: _filteredFiles.length,
-        itemBuilder: (context, index) {
-          String pdfFile = _filteredFiles[index];
-          return ListTile(
-            title: Text(path.basename(pdfFile)),
-            onTap: () async {
-              String pdfPath = await _getFilePath(pdfFile);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => PDFViewerPage(filePath: pdfPath),
-                ),
-              );
-            },
-          );
-        },
-      ),
-    );
-  }
 
  
 
