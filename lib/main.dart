@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:elect241/screens/components/imageview.dart';
 
 void main() {
   runApp(const Elect241App());
@@ -418,9 +419,73 @@ class _VideoScreenState extends State<VideoScreen> {
 }
 
 
+
+
 class FeedScreen extends StatelessWidget {
+  const FeedScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text('Feed Screen'));
+    // 📌 Liste des images et leurs PDF associés
+    List<Map<String, String>> feedItems = [
+      {"image": "assets/images/election.png", "pdf": "assets/pdfs/date.pdf"},
+      {"image": "assets/images/elect.png", "pdf": "assets/pdfs/elect.pdf"},
+      {"image": "assets/images/all.png", "pdf": "assets/pdfs/elect.pdf"},
+    ];
+
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(40), // 📌 Réduction de la hauteur de l'AppBar
+        child: AppBar(
+          title: const Text("Feed", style: TextStyle(color: Colors.white, fontSize: 18)),
+          backgroundColor: Colors.blue,
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: ListView.builder(
+          itemCount: feedItems.length,
+          itemBuilder: (context, index) {
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 15), // 📌 Espacement entre les images
+              child: GestureDetector(
+                onTap: () {
+                  // 📌 Navigation vers la page PDF
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => PDFViewScreen(
+                        pdfPath: feedItems[index]["pdf"]!,
+                        title: "Document PDF",
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  height: 150, // 📌 Hauteur du conteneur pour l'image
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 5,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  clipBehavior: Clip.antiAlias,
+                  child: Image.asset(
+                    feedItems[index]["image"]!,
+                    width: double.infinity, // 📌 Largeur adaptable
+                    height: 150, // 📌 Hauteur fixe pour uniformiser
+                    fit: BoxFit.cover, // 📌 Remplissage optimal sans distorsion
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
 }
