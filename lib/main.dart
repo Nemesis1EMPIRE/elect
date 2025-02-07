@@ -26,7 +26,7 @@ class Elect241App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: MainScreen(),
     );
   }
 }
@@ -88,65 +88,12 @@ class BottomNavBar extends StatelessWidget {
       selectedItemColor: Colors.blue,
       unselectedItemColor: Colors.grey,
       items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.image_aspect_ratio), label: "Actualités"),
+        BottomNavigationBarItem(icon: Icon(Icons.new_releases_rounded), label: "Actualités"),
         BottomNavigationBarItem(icon: Icon(Icons.video_library), label: "Décryptages"),
         BottomNavigationBarItem(icon: Icon(Icons.chat), label: "FAQ"),
         BottomNavigationBarItem(icon: Icon(Icons.picture_as_pdf), label: "Lois Électorales"),        
       ],
       onTap: onItemTapped,
-    );
-  }
-}
-
-class SplashScreen extends StatefulWidget {
-  @override
-  _SplashScreenState createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  late VideoPlayerController _controller;
-  late Future<void> _initializeVideoPlayerFuture;
-
-  final String videoUrl = 'assets/vid/vid.mp4'; // Test URL
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.asset(videoUrl);
-    _initializeVideoPlayerFuture = _controller.initialize();
-
-    Future.delayed(Duration.zero, () async {
-      await _initializeVideoPlayerFuture;
-      _controller.play();
-      setState(() {});
-    });
-
-    Timer(const Duration(seconds: 5), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainScreen()),
-      );
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: Center(
-        child: _controller.value.isInitialized
-            ? AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
-              )
-            : const CircularProgressIndicator(),
-      ),
     );
   }
 }
