@@ -36,10 +36,10 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
-    const PDFViewerSection(),
+    FeedScreen(), // Define this class to fix the issue
     VideoScreen(), // Define this class to fix the issue
     const FAQScreen(),
-    FeedScreen(), // Define this class to fix the issue
+    const PDFViewerSection(),    
   ];
 
   void _onItemTapped(int index) {
@@ -82,10 +82,10 @@ class BottomNavBar extends StatelessWidget {
       selectedItemColor: Colors.blue,
       unselectedItemColor: Colors.grey,
       items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.picture_as_pdf), label: "Lois Électorales"),
+        BottomNavigationBarItem(icon: Icon(Icons.image_aspect_ratio), label: "Actualités"),
         BottomNavigationBarItem(icon: Icon(Icons.video_library), label: "Décryptages"),
         BottomNavigationBarItem(icon: Icon(Icons.chat), label: "FAQ"),
-        BottomNavigationBarItem(icon: Icon(Icons.image_aspect_ratio), label: "Actualités"),
+        BottomNavigationBarItem(icon: Icon(Icons.picture_as_pdf), label: "Lois Électorales"),        
       ],
       onTap: onItemTapped,
     );
@@ -257,6 +257,7 @@ class _FAQScreenState extends State<FAQScreen> {
   }
 }
 
+
 class PDFViewerSection extends StatefulWidget {
   const PDFViewerSection({super.key});
 
@@ -272,16 +273,18 @@ class _PDFViewerSectionState extends State<PDFViewerSection> {
   @override
   void initState() {
     super.initState();
-    getFiles();
+    getFiles();  // Charge les fichiers PDF au démarrage
   }
 
+  /// 📌 Charge les fichiers PDF depuis les assets
   Future<void> getFiles() async {
     try {
+      // Charge la liste des fichiers déclarés dans `pubspec.yaml`
       String manifestContent = await rootBundle.loadString('AssetManifest.json');
       Map<String, dynamic> manifestMap = json.decode(manifestContent);
 
       List<String> assetPaths = manifestMap.keys
-          .where((String key) => key.endsWith('.pdf'))
+          .where((String key) => key.endsWith('.pdf'))  // Filtre uniquement les PDF
           .toList();
 
       setState(() {
@@ -293,6 +296,7 @@ class _PDFViewerSectionState extends State<PDFViewerSection> {
     }
   }
 
+  /// 📌 Filtre les fichiers en fonction de la recherche
   void _filterFiles(String query) {
     setState(() {
       _filteredFiles = query.isEmpty
@@ -305,33 +309,34 @@ class _PDFViewerSectionState extends State<PDFViewerSection> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(40),
-        child: AppBar(
-          title: !_isSearching
-              ? const Text("Lois électorales", style: TextStyle(color: Colors.white, fontSize: 18))
-              : TextField(
-                  decoration: const InputDecoration(
-                    hintText: "Rechercher un PDF...",
-                    border: InputBorder.none,
-                  ),
-                  onChanged: _filterFiles,
-                ),
-          backgroundColor: Colors.blue,
-          elevation: 0,
-          actions: [
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  _isSearching = !_isSearching;
-                  _filteredFiles = _pdfFiles;
-                });
-              },
-              icon: Icon(_isSearching ? Icons.cancel : Icons.search),
-            )
-          ],
-        ),
-      ),
+     appBar: PreferredSize(
+  preferredSize: const Size.fromHeight(40), // 📌 Réduction de la hauteur de l'AppBar
+  child: AppBar(
+    title: !_isSearching
+        ? const Text("Lois électorales", style: TextStyle(color: Colors.white, fontSize: 18))
+        : TextField(
+            decoration: const InputDecoration(
+              hintText: "Rechercher un PDF...",
+              border: InputBorder.none,
+            ),
+            onChanged: _filterFiles,
+          ),
+    backgroundColor: Colors.blue,
+    elevation: 0,
+    actions: [
+      IconButton(
+        onPressed: () {
+          setState(() {
+            _isSearching = !_isSearching;
+            _filteredFiles = _pdfFiles;
+          });
+        },
+        icon: Icon(_isSearching ? Icons.cancel : Icons.search),
+      )
+    ],
+  ),
+),
+
       body: _filteredFiles.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -340,18 +345,36 @@ class _PDFViewerSectionState extends State<PDFViewerSection> {
                 String filePath = _filteredFiles[index];
                 String fileName = path.basename(filePath);
                 return Card(
+                  color: Colors.white,
+                  margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   child: ListTile(
-                    title: Text(fileName),
+                    title: Text(fileName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                    leading: const Icon(Icons.picture_as_pdf, color: Colors.yellow, size: 30),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 18),
                     onTap: () {
-                      // Open the PDF viewer
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => PDFViewScreen(pdfPath: filePath, pdfName: fileName),
+                        ),
+                      );
                     },
                   ),
                 );
               },
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: getFiles,
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        child: const Icon(Icons.refresh),
+      ),
     );
   }
 }
+
 
 // Define VideoScreen and FeedScreen if not defined already.
 
