@@ -35,9 +35,9 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = [
     const PDFViewerSection(),
-    VideoScreen(),
+    VideoScreen(), // Define this class to fix the issue
     const FAQScreen(),
-    const FeedScreen(),
+    const FeedScreen(), // Define this class to fix the issue
   ];
 
   void _onItemTapped(int index) {
@@ -338,4 +338,30 @@ class _PDFViewerSectionState extends State<PDFViewerSection> {
                 String filePath = _filteredFiles[index];
                 String fileName = path.basename(filePath);
                 return Card(
-                 
+                  child: ListTile(
+                    title: Text(fileName),
+                    onTap: () {
+                      // Open the PDF viewer
+                    },
+                  ),
+                );
+              },
+            ),
+    );
+  }
+}
+
+// Define VideoScreen and FeedScreen if not defined already.
+class VideoScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Text('Video Screen'));
+  }
+}
+
+class FeedScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Center(child: Text('Feed Screen'));
+  }
+}
