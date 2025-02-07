@@ -106,7 +106,7 @@ class _SplashScreenState extends State<SplashScreen> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
 
-  final String videoUrl = 'assets/vid/'; // Test URL
+  final String videoUrl = 'assets/vid/vid.mp4'; // Test URL
 
   @override
   void initState() {
