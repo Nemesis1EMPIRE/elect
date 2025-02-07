@@ -64,33 +64,32 @@ class _PDFViewerSectionState extends State<PDFViewerSection> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(50),
-        child: AppBar(
-          title: !_isSearching
-              ? const Text("Lois électorales", style: TextStyle(color: Colors.white, fontSize: 18))
-              : TextField(
-                  decoration: const InputDecoration(
-                    hintText: "Rechercher un PDF...",
-                    border: InputBorder.none,
-                  ),
-                  onChanged: _filterFiles,
-                  style: const TextStyle(color: Colors.white),
-                ),
-          backgroundColor: Colors.blue,
-          elevation: 0,
-          actions: [
-            IconButton(
-              onPressed: () {
-                setState(() {
-                  _isSearching = !_isSearching;
-                  _filteredFiles = _pdfFiles;
-                });
-              },
-              icon: Icon(_isSearching ? Icons.cancel : Icons.search, color: Colors.white),
-            )
-          ],
-        ),
-      ),
+  preferredSize: const Size.fromHeight(40), // 📌 Réduction de la hauteur de l'AppBar
+  child: AppBar(
+    title: !_isSearching
+        ? const Text("Lois électorales", style: TextStyle(color: Colors.white, fontSize: 18))
+        : TextField(
+            decoration: const InputDecoration(
+              hintText: "Rechercher un PDF...",
+              border: InputBorder.none,
+            ),
+            onChanged: _filterFiles,
+          ),
+    backgroundColor: Colors.blue,
+    elevation: 0,
+    actions: [
+      IconButton(
+        onPressed: () {
+          setState(() {
+            _isSearching = !_isSearching;
+            _filteredFiles = _pdfFiles;
+          });
+        },
+        icon: Icon(_isSearching ? Icons.cancel : Icons.search),
+      )
+    ],
+  ),
+),
 
       body: _isLoading
           ? const Center(child: CircularProgressIndicator()) // Chargement en cours
