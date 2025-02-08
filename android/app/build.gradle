@@ -1,4 +1,3 @@
-apply plugin: 'com.android.application'
 plugins {
     id "com.android.application"
     id "kotlin-android"
@@ -43,6 +42,8 @@ android {
 flutter {
     source = "../.."
 }
+
 dependencies {
+    // Dependencies for Gradle build.
     classpath 'com.android.tools.build:gradle:7.0.0'
 }
