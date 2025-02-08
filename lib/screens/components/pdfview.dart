@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter_tts/flutter_tts.dart';
 
 class PDFViewScreen extends StatefulWidget {
   final String pdfPath;
@@ -16,7 +17,10 @@ class PDFViewScreen extends StatefulWidget {
 
 class _PDFViewScreenState extends State<PDFViewScreen> {
   String? localPDFPath;
-  bool _isLoading = true; // 📌 Indicateur de chargement
+  bool _isLoading = true;
+  final FlutterTts _flutterTts = FlutterTts();
+  final TextEditingController _searchController = TextEditingController();
+  int? _searchPage;
 
   @override
   void initState() {
@@ -24,7 +28,6 @@ class _PDFViewScreenState extends State<PDFViewScreen> {
     _loadPDF();
   }
 
-  /// 📌 Copie le fichier PDF depuis les assets vers un dossier temporaire
   Future<void> _loadPDF() async {
     try {
       final byteData = await rootBundle.load(widget.pdfPath);
@@ -34,7 +37,7 @@ class _PDFViewScreenState extends State<PDFViewScreen> {
 
       setState(() {
         localPDFPath = tempFile.path;
-        _isLoading = false; // 📌 Fin du chargement
+        _isLoading = false;
       });
     } catch (e) {
       print("Erreur lors du chargement du PDF : $e");
@@ -44,23 +47,54 @@ class _PDFViewScreenState extends State<PDFViewScreen> {
     }
   }
 
+  Future<void> _speakText(String text) async {
+    await _flutterTts.speak(text);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.pdfName),
         backgroundColor: Colors.blue,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.volume_up),
+            onPressed: () => _speakText("Lecture du document en cours..."),
+          ),
+        ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator()) // 📌 Chargement
+          ? const Center(child: CircularProgressIndicator())
           : localPDFPath == null
               ? const Center(child: Text("Erreur lors du chargement du fichier"))
-              : PDFView(
-                  filePath: localPDFPath!,
-                  enableSwipe: true,
-                  swipeHorizontal: false,
-                  autoSpacing: true,
-                  pageFling: true,
+              : Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextField(
+                        controller: _searchController,
+                        decoration: InputDecoration(
+                          labelText: "Rechercher dans le PDF",
+                          suffixIcon: IconButton(
+                            icon: const Icon(Icons.search),
+                            onPressed: () {
+                              // Ajoutez ici la logique pour rechercher un mot dans le PDF
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: PDFView(
+                        filePath: localPDFPath!,
+                        enableSwipe: true,
+                        swipeHorizontal: true,
+                        autoSpacing: true,
+                        pageFling: true,
+                      ),
+                    ),
+                  ],
                 ),
     );
   }
