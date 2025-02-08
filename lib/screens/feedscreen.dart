@@ -17,13 +17,10 @@ class FeedScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(40), // 📌 Réduction de la hauteur de l'AppBar
-        child: AppBar(
+      appBar:  AppBar(
           title: const Text("Actualités Politiques", style: TextStyle(color: Colors.white, fontSize: 18)),
           backgroundColor: Colors.blue,
         ),
-      ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: ListView.builder(
