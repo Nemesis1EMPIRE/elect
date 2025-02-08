@@ -4,6 +4,7 @@ import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:pdf_text/pdf_text.dart';
 
 class PDFViewScreen extends StatefulWidget {
   final String pdfPath;
@@ -21,6 +22,9 @@ class _PDFViewScreenState extends State<PDFViewScreen> {
   final FlutterTts _flutterTts = FlutterTts();
   final TextEditingController _searchController = TextEditingController();
   int? _searchPage;
+  String _pdfText = '';
+  List<String> _pageTexts = [];
+  int _totalPages = 0;
 
   @override
   void initState() {
@@ -35,6 +39,9 @@ class _PDFViewScreenState extends State<PDFViewScreen> {
       final tempFile = File("${tempDir.path}/${widget.pdfName}");
       await tempFile.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
 
+      // Extraire le texte par page
+      await _extractTextFromPDF(tempFile);
+
       setState(() {
         localPDFPath = tempFile.path;
         _isLoading = false;
@@ -44,6 +51,36 @@ class _PDFViewScreenState extends State<PDFViewScreen> {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  // Extraire le texte par page
+  Future<void> _extractTextFromPDF(File file) async {
+    PDFDoc doc = await PDFDoc.fromFile(file);
+    _totalPages = await doc.countPages;
+    for (var i = 0; i < _totalPages; i++) {
+      String pageText = await doc.pageAt(i).then((page) => page.text);
+      _pageTexts.add(pageText);  // Stocke le texte de chaque page
+    }
+  }
+
+  // Recherche dans le texte extrait du PDF
+  void _searchInPDF(String query) {
+    int foundPage = -1;
+    for (int i = 0; i < _pageTexts.length; i++) {
+      if (_pageTexts[i].contains(query)) {
+        foundPage = i;
+        break;
+      }
+    }
+
+    if (foundPage != -1) {
+      setState(() {
+        _searchPage = foundPage;
+      });
+      print("Mot trouvé à la page : $foundPage");
+    } else {
+      print("Mot non trouvé.");
     }
   }
 
@@ -79,7 +116,7 @@ class _PDFViewScreenState extends State<PDFViewScreen> {
                           suffixIcon: IconButton(
                             icon: const Icon(Icons.search),
                             onPressed: () {
-                              // Ajoutez ici la logique pour rechercher un mot dans le PDF
+                              _searchInPDF(_searchController.text);
                             },
                           ),
                         ),
@@ -92,6 +129,7 @@ class _PDFViewScreenState extends State<PDFViewScreen> {
                         swipeHorizontal: true,
                         autoSpacing: true,
                         pageFling: true,
+                        pageIndex: _searchPage ?? 0, // Naviguer vers la page recherchée
                       ),
                     ),
                   ],
