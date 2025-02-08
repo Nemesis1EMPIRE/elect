@@ -68,7 +68,7 @@ class _VideoListPageState extends State<VideoListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Décryptages'),
+        title: Text('Décryptages', style: TextStyle(color: Colors.white, fontSize: 18)),
         backgroundColor: Colors.blue,
       ),
       body: Column(
