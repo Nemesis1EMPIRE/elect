@@ -197,15 +197,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                               children: [
                                 VideoPlayer(_controller),
                                 _ControlsOverlay(controller: _controller),
-                                VideoProgressIndicator(
-                                  _controller,
-                                  allowScrubbing: true,
-                                  colors: VideoProgressColors(
-                                    playedColor: Colors.red,
-                                    bufferedColor: Colors.grey,
-                                    
-                                  ),
-                                ),
+                              
                               ],
                             ),
                           )
