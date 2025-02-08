@@ -68,7 +68,7 @@ class _VideoListPageState extends State<VideoListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lecteur de Vidéos'),
+        title: Text('Décryptages'),
         backgroundColor: Colors.blue,
       ),
       body: Column(
@@ -203,7 +203,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                                   colors: VideoProgressColors(
                                     playedColor: Colors.red,
                                     bufferedColor: Colors.grey,
-                                    backgroundColor: Colors.white,
+                                    
                                   ),
                                 ),
                               ],
