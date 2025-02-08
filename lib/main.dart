@@ -8,7 +8,7 @@ import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:elect241/screens/components/pdfview.dart';
 import 'package:elect241/screens/components/imageview.dart';
-import 'package:elect241/screens/videoscreen.dart';
+import 'package:elect241/screens/VideoList.dart';
 import 'package:elect241/screens/feedscreen.dart';
 import 'package:elect241/screens/pdfviewer.dart';
 
@@ -43,7 +43,7 @@ class _MainScreenState extends State<MainScreen> {
 
   final List<Widget> _screens = [
     FeedScreen(), // Define this class to fix the issue
-    VideoListScreen(), // Define this class to fix the issue
+    VideoListPage(), // Define this class to fix the issue
     const FAQScreen(),
     const PDFViewerSection(),    
   ];
