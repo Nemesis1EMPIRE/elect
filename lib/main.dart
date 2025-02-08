@@ -103,7 +103,7 @@ class _SplashScreenState extends State<SplashScreen> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
 
-  final String videoUrl = 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'; // Test URL
+  final String videoUrl = 'assets/vid.mp4'; // Test URL
 
   @override
   void initState() {
