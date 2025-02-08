@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 import 'package:elect241/screens/components/imageview.dart';
+import 'package:video_player/video_player.dart';
 
 class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key});
@@ -10,12 +10,13 @@ class FeedScreen extends StatefulWidget {
 }
 
 class _FeedScreenState extends State<FeedScreen> {
-  // 📌 Liste des médias (images, vidéos, PDF)
   List<Map<String, String>> feedItems = [
-    {"type": "image", "source": "assets/images/election.png", "pdf": "assets/pdfs/date.pdf"},
-    {"type": "image", "source": "assets/images/elect.jpeg", "pdf": "assets/pdfs/date.pdf"},
-    {"type": "image", "source": "assets/images/elect.png", "pdf": "assets/pdfs/elect.pdf"},
-    {"type": "video", "source": "assets/video4.mp4"},
+    {"image": "assets/images/election.png", "pdf": "assets/pdfs/date.pdf"},
+    {"image": "assets/images/elect.jpeg", "pdf": "assets/pdfs/date.pdf"},
+    {"image": "assets/images/elect.png", "pdf": "assets/pdfs/elect.pdf"},
+    {"image": "assets/images/all.png", "pdf": "assets/pdfs/elect.pdf"},
+    {"video": "assets/video4.mp4"}, // 📌 Ajout d'une vidéo locale
+
   ];
 
   @override
@@ -30,12 +31,14 @@ class _FeedScreenState extends State<FeedScreen> {
         child: ListView.builder(
           itemCount: feedItems.length,
           itemBuilder: (context, index) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 15),
-              child: feedItems[index]["type"] == "video"
-                  ? VideoWidget(videoPath: feedItems[index]["source"]!)
-                  : ImageWidget(imagePath: feedItems[index]["source"]!, pdfPath: feedItems[index]["pdf"]),
-            );
+            final item = feedItems[index];
+
+            // Vérifie si c'est une vidéo ou une image
+            if (item.containsKey("video")) {
+              return VideoItem(videoUrl: item["video"]!);
+            } else {
+              return ImageItem(imagePath: item["image"]!, pdfPath: item["pdf"]!);
+            }
           },
         ),
       ),
@@ -43,106 +46,133 @@ class _FeedScreenState extends State<FeedScreen> {
   }
 }
 
-// 📌 Widget pour afficher une image avec redirection vers un PDF
-class ImageWidget extends StatelessWidget {
+// 📌 Widget pour afficher une image avec navigation vers un PDF
+class ImageItem extends StatelessWidget {
   final String imagePath;
-  final String? pdfPath;
+  final String pdfPath;
 
-  const ImageWidget({required this.imagePath, this.pdfPath, super.key});
+  const ImageItem({required this.imagePath, required this.pdfPath});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        if (pdfPath != null) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: GestureDetector(
+        onTap: () {
           Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => PDFViewScreen(
-                pdfPath: pdfPath!,
+                pdfPath: pdfPath,
                 title: "Document PDF",
               ),
             ),
           );
-        }
-      },
-      child: Container(
-        height: 180,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 5, spreadRadius: 2),
-          ],
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Image.asset(
-          imagePath,
-          width: double.infinity,
+        },
+        child: Container(
           height: 180,
-          fit: BoxFit.cover,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 5,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Image.asset(
+            imagePath,
+            width: double.infinity,
+            height: 180,
+            fit: BoxFit.cover,
+          ),
         ),
       ),
     );
   }
 }
 
-// 📌 Widget pour afficher une vidéo avec un lecteur
-class VideoWidget extends StatefulWidget {
-  final String videoPath;
+// 📌 Widget pour afficher une vidéo
+class VideoItem extends StatefulWidget {
+  final String videoUrl;
 
-  const VideoWidget({required this.videoPath, super.key});
+  const VideoItem({required this.videoUrl});
 
   @override
-  _VideoWidgetState createState() => _VideoWidgetState();
+  _VideoItemState createState() => _VideoItemState();
 }
 
-class _VideoWidgetState extends State<VideoWidget> {
+class _VideoItemState extends State<VideoItem> {
   late VideoPlayerController _controller;
+  bool _isPlaying = false;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.asset(widget.videoPath)
-      ..initialize().then((_) {
-        setState(() {});
-        _controller.setLooping(true);
-      });
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    return _controller.value.isInitialized
-        ? Container(
-            width: double.infinity,
-            height: 300,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                VideoPlayer(_controller),
-                Positioned(
-                  bottom: 10,
-                  right: 10,
-                  child: FloatingActionButton(
-                    mini: true,
-                    backgroundColor: Colors.black54,
-                    onPressed: () {
-                      setState(() {
-                        _controller.value.isPlaying ? _controller.pause() : _controller.play();
-                      });
-                    },
-                    child: Icon(_controller.value.isPlaying ? Icons.pause : Icons.play_arrow),
-                  ),
-                ),
-              ],
-            ),
-          )
-        : const Center(child: CircularProgressIndicator());
+    // Détection de la source locale ou en ligne
+    if (widget.videoUrl.startsWith("http")) {
+      _controller = VideoPlayerController.network(widget.videoUrl);
+    } else {
+      _controller = VideoPlayerController.asset(widget.videoUrl);
+    }
+
+    _controller.initialize().then((_) {
+      setState(() {});
+    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: GestureDetector(
+        onTap: () {
+          setState(() {
+            _isPlaying ? _controller.pause() : _controller.play();
+            _isPlaying = !_isPlaying;
+          });
+        },
+        child: Container(
+          height: 200,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 5,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              AspectRatio(
+                aspectRatio: _controller.value.isInitialized ? _controller.value.aspectRatio : 16 / 9,
+                child: _controller.value.isInitialized
+                    ? VideoPlayer(_controller)
+                    : const Center(child: CircularProgressIndicator()),
+              ),
+              if (!_isPlaying)
+                Icon(
+                  Icons.play_circle_fill,
+                  color: Colors.white.withOpacity(0.8),
+                  size: 60,
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
