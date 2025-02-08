@@ -6,6 +6,10 @@ import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:elect241/screens/pdfviewer.dart';
+import 'package:elect241/screens/faqscreen.dart';
+import 'package:elect241/screens/VideoList.dart';
+import 'package:elect241/screens/feedscreen.dart';
 
 void main() {
   runApp(const Elect241App());
@@ -34,10 +38,10 @@ class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
-    const PDFViewerSection(),
-    VideoScreen(),
+    FeedScreen(),
+    VideoListPage(),
     const FAQScreen(),
-    const FeedScreen(),
+    const PDFViewerSection(),
   ];
 
   void _onItemTapped(int index) {
@@ -124,7 +128,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      
       body: Center(
         child: _controller.value.isInitialized
             ? AspectRatio(
