@@ -1,223 +1,125 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
-import 'dart:async';
-import 'package:path/path.dart' as path;
-import 'dart:convert';
-import 'package:flutter/services.dart' show rootBundle;
-import 'package:flutter_pdfview/flutter_pdfview.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:elect241/screens/components/pdfview.dart';
-import 'package:elect241/screens/components/imageview.dart';
-import 'package:elect241/screens/VideoList.dart';
-import 'package:elect241/screens/feedscreen.dart';
-import 'package:elect241/screens/pdfviewer.dart';
-
-import 'dart:io';
-
 
 void main() {
-  runApp(const Elect241App());
+  runApp(const MyApp());
 }
 
-class Elect241App extends StatelessWidget {
-  const Elect241App({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: MainScreen(),
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        // This is the theme of your application.
+        //
+        // TRY THIS: Try running your application with "flutter run". You'll see
+        // the application has a purple toolbar. Then, without quitting the app,
+        // try changing the seedColor in the colorScheme below to Colors.green
+        // and then invoke "hot reload" (save your changes or press the "hot
+        // reload" button in a Flutter-supported IDE, or press "r" if you used
+        // the command line to start the app).
+        //
+        // Notice that the counter didn't reset back to zero; the application
+        // state is not lost during the reload. To reset the state, use hot
+        // restart instead.
+        //
+        // This works for code too, not just values: Most code changes can be
+        // tested with just a hot reload.
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  // This widget is the home page of your application. It is stateful, meaning
+  // that it has a State object (defined below) that contains fields that affect
+  // how it looks.
+
+  // This class is the configuration for the state. It holds the values (in this
+  // case the title) provided by the parent (in this case the App widget) and
+  // used by the build method of the State. Fields in a Widget subclass are
+  // always marked "final".
+
+  final String title;
 
   @override
-  State<MainScreen> createState() => _MainScreenState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
 
-  final List<Widget> _screens = [
-    FeedScreen(), // Define this class to fix the issue
-    VideoListPage(), // Define this class to fix the issue
-    const FAQScreen(),
-    const PDFViewerSection(),    
-  ];
-
-  void _onItemTapped(int index) {
+  void _incrementCounter() {
     setState(() {
-      _selectedIndex = index;
+      // This call to setState tells the Flutter framework that something has
+      // changed in this State, which causes it to rerun the build method below
+      // so that the display can reflect the updated values. If we changed
+      // _counter without calling setState(), then the build method would not be
+      // called again, and so nothing would appear to happen.
+      _counter++;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    //
+    // The Flutter framework has been optimized to make rerunning build methods
+    // fast, so that you can just rebuild anything that needs updating rather
+    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        elevation: 4,
-        backgroundColor: Colors.white,
-        title: Image.asset("assets/banner.png", height: 58),
+        // TRY THIS: Try changing the color here to a specific color (to
+        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
+        // change color while the other colors stay the same.
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: Text(widget.title),
       ),
-      bottomNavigationBar: BottomNavBar(
-        currentIndex: _selectedIndex,
-        onItemTapped: _onItemTapped,
-      ),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
-      ),
-    );
-  }
-}
-
-class BottomNavBar extends StatelessWidget {
-  final int currentIndex;
-  final Function(int) onItemTapped;
-
-  const BottomNavBar({super.key, required this.currentIndex, required this.onItemTapped});
-
-  @override
-  Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      type: BottomNavigationBarType.fixed,
-      currentIndex: currentIndex,
-      selectedItemColor: Colors.blue,
-      unselectedItemColor: Colors.grey,
-      items: const [
-        BottomNavigationBarItem(icon: Icon(Icons.new_releases_rounded), label: "Actualités"),
-        BottomNavigationBarItem(icon: Icon(Icons.video_library), label: "Décryptages"),
-        BottomNavigationBarItem(icon: Icon(Icons.chat), label: "FAQ"),
-        BottomNavigationBarItem(icon: Icon(Icons.picture_as_pdf), label: "Lois Électorales"),        
-      ],
-      onTap: onItemTapped,
-    );
-  }
-}
-
-class FAQScreen extends StatefulWidget {
-  const FAQScreen({super.key});
-
-  @override
-  _FAQScreenState createState() => _FAQScreenState();
-}
-
-class _FAQScreenState extends State<FAQScreen> {
-  final TextEditingController _questionController = TextEditingController();
-  final Map<String, List<String>> _faqData = {};
-
-  void _addQuestion() {
-    String question = _questionController.text.trim();
-    if (question.isNotEmpty) {
-      setState(() {
-        _faqData[question] = [];
-      });
-      _questionController.clear();
-    }
-  }
-
-  void _addAnswer(String question, String answer) {
-    if (answer.isNotEmpty) {
-      setState(() {
-        _faqData[question]?.add(answer);
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(40),
-        child: AppBar(
-          title: const Text("FAQ", style: TextStyle(color: Colors.white, fontSize: 18)),
-          backgroundColor: Colors.blue,
+      body: Center(
+        // Center is a layout widget. It takes a single child and positions it
+        // in the middle of the parent.
+        child: Column(
+          // Column is also a layout widget. It takes a list of children and
+          // arranges them vertically. By default, it sizes itself to fit its
+          // children horizontally, and tries to be as tall as its parent.
+          //
+          // Column has various properties to control how it sizes itself and
+          // how it positions its children. Here we use mainAxisAlignment to
+          // center the children vertically; the main axis here is the vertical
+          // axis because Columns are vertical (the cross axis would be
+          // horizontal).
+          //
+          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
+          // action in the IDE, or press "p" in the console), to see the
+          // wireframe for each widget.
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Text(
+              'You have pushed the button this many times:',
+            ),
+            Text(
+              '$_counter',
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+          ],
         ),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _questionController,
-                    decoration: InputDecoration(
-                      hintText: "Posez votre question...",
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 10),
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.send, color: Colors.blue),
-                  onPressed: _addQuestion,
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _faqData.length,
-              itemBuilder: (context, index) {
-                String question = _faqData.keys.elementAt(index);
-                return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  child: ExpansionTile(
-                    title: Text(
-                      "❓ $question",
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    children: [
-                      ..._faqData[question]!.map((answer) => ListTile(
-                            title: Text("💬 $answer"),
-                            leading: const Icon(Icons.comment, color: Colors.blue),
-                          )),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextField(
-                                decoration: InputDecoration(
-                                  hintText: "Votre réponse...",
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                  ),
-                                ),
-                                onSubmitted: (value) => _addAnswer(question, value),
-                              ),
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.send, color: Colors.green),
-                              onPressed: () {
-                                _addAnswer(question, _questionController.text);
-                                _questionController.clear();
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
-
-
- 
-
-
-
