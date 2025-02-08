@@ -13,9 +13,9 @@ class VideoListScreen extends StatefulWidget {
 
 class _VideoListScreenState extends State<VideoListScreen> {
   List<Map<String, String>> videos = [
-    {"title": "Nature", "path": "assets/vid/video1.mp4", "thumbnail": "assets/elect.png"},
-    {"title": "Ville", "path": "assets/vid/video2.mp4", "thumbnail": "assets/elect.png"},
-    {"title": "Mer", "path": "assets/vid/video3.mp4", "thumbnail": "assets/elect.png"},
+    {"title": "Nature", "path": "assets/vid/video1.mp4", "thumbnail": "assets/images/elect.png"},
+    {"title": "Ville", "path": "assets/vid/video2.mp4", "thumbnail": "assets/images/elect.png"},
+    {"title": "Mer", "path": "assets/vid/video3.mp4", "thumbnail": "assets/images/elect.png"},
   ];
 
   List<Map<String, String>> filteredVideos = [];
