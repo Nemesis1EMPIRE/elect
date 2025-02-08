@@ -1,23 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Lecteur de Vidéos',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: VideoListPage(),
-    );
-  }
-}
-
 class VideoListPage extends StatefulWidget {
   @override
   _VideoListPageState createState() => _VideoListPageState();
@@ -169,7 +152,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
       appBar: _isFullScreen
           ? null
           : AppBar(
-              title: Text('Lecture de Vidéo'),
+              title: Text('Décryptages'),
             ),
       body: _hasError
           ? Center(
