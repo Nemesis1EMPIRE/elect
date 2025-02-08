@@ -12,6 +12,7 @@ class FeedScreen extends StatelessWidget {
       {"image": "assets/images/election.png", "pdf": "assets/pdfs/date.pdf"},
       {"image": "assets/images/elect.png", "pdf": "assets/pdfs/elect.pdf"},
       {"image": "assets/images/all.png", "pdf": "assets/pdfs/elect.pdf"},
+      {"image": "assets/images/elect.jpeg", "pdf": "assets/pdfs/date.pdf"},
     ];
 
     return Scaffold(
