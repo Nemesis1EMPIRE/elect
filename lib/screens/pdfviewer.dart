@@ -66,13 +66,18 @@ class _PDFViewerSectionState extends State<PDFViewerSection> {
       appBar: AppBar(
     title: !_isSearching
         ? const Text("Lois électorales", style: TextStyle(color: Colors.white, fontSize: 18))
-        : TextField(
-            decoration: const InputDecoration(
-              hintText: "Rechercher un PDF...",
-              border: InputBorder.none,
+        : child: TextField(
+              onChanged: _filterFiles,
+              decoration: InputDecoration(
+                labelText: 'Rechercher',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+              ),
             ),
-            onChanged: _filterFiles,
-          ),
+            
+        
     backgroundColor: Colors.blue,
     elevation: 0,
     actions: [
