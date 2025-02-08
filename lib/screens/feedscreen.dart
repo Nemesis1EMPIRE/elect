@@ -10,16 +10,17 @@ class FeedScreen extends StatelessWidget {
     // 📌 Liste des images et leurs PDF associés
     List<Map<String, String>> feedItems = [
       {"image": "assets/images/election.png", "pdf": "assets/pdfs/date.pdf"},
+       {"image": "assets/images/elect.jpeg", "pdf": "assets/pdfs/date.pdf"},
       {"image": "assets/images/elect.png", "pdf": "assets/pdfs/elect.pdf"},
       {"image": "assets/images/all.png", "pdf": "assets/pdfs/elect.pdf"},
-      {"image": "assets/images/elect.jpeg", "pdf": "assets/pdfs/date.pdf"},
+     
     ];
 
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(40), // 📌 Réduction de la hauteur de l'AppBar
         child: AppBar(
-          title: const Text("Feed", style: TextStyle(color: Colors.white, fontSize: 18)),
+          title: const Text("Actualités Politiques", style: TextStyle(color: Colors.white, fontSize: 18)),
           backgroundColor: Colors.blue,
         ),
       ),
