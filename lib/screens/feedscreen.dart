@@ -42,7 +42,7 @@ class FeedScreen extends StatelessWidget {
                   );
                 },
                 child: Container(
-                  height: 160, // 📌 Hauteur du conteneur pour l'image
+                  height: 180, // 📌 Hauteur du conteneur pour l'image
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     boxShadow: [
@@ -57,7 +57,7 @@ class FeedScreen extends StatelessWidget {
                   child: Image.asset(
                     feedItems[index]["image"]!,
                     width: double.infinity, // 📌 Largeur adaptable
-                    height: 160, // 📌 Hauteur fixe pour uniformiser
+                    height: 180, // 📌 Hauteur fixe pour uniformiser
                     fit: BoxFit.cover, // 📌 Remplissage optimal sans distorsion
                   ),
                 ),
