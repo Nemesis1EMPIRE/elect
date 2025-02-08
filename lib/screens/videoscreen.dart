@@ -12,7 +12,6 @@ class VideoListScreen extends StatefulWidget {
 }
 
 class _VideoListScreenState extends State<VideoListScreen> {
-  List<String> _filteredFiles = [];
   List<String> videoAssets = [
     "assets/vid/video1.mp4",
     "assets/vid/video2.mp4",
