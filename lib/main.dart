@@ -30,7 +30,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
   void initState() {
     super.initState();
     _videoPlayerController = VideoPlayerController.asset(
-      'assets/vid.mp4',
+      'assets/output.avi',
     )..initialize().then((_) {
         _videoPlayerController.play();
         setState(() {});
