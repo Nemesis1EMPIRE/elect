@@ -32,8 +32,18 @@ class _VideoListPageState extends State<VideoListPage> {
     },
     {
       'title': 'Vidéo 2',
-      'videoPath': 'assets/vid/video2.mp4',
+      'videoPath': 'assets/vid/video.mp4',
       'thumbnail': 'assets/images/elect.png',
+    },
+    {
+      'title': 'Vidéo 3',
+      'videoPath': 'assets/vid/video1.mp4',
+      'thumbnail': 'assets/icon.png',
+    },
+    {
+      'title': 'Vidéo 2',
+      'videoPath': 'assets/vid/vid.mp4',
+      'thumbnail': 'assets/Brice.png',
     },
   ];
 
@@ -122,7 +132,6 @@ class VideoPlayerPage extends StatefulWidget {
 
 class _VideoPlayerPageState extends State<VideoPlayerPage> {
   late VideoPlayerController _controller;
-  late Future<void> _initializeVideoPlayerFuture;
   bool _isFullScreen = false;
   bool _hasError = false;
 
@@ -200,7 +209,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
                               ],
                             ),
                           )
-                        : CircularProgressIndicator(),
+                        : SizedBox.shrink(), // Pas de CircularProgressIndicator
                   ),
                 ),
                 Padding(
