@@ -130,7 +130,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       appBar: AppBar(title: const Text("Lecture Vidéo")),
       body: Center(
         child: _controller.value.isInitialized
-            ? Column(
+            ? Stack(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   AspectRatio(
