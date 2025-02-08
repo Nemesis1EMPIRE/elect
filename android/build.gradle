@@ -1,3 +1,14 @@
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.0.0' // Vérifiez que c'est bien dans ce fichier
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.21'
+    }
+}
+
 allprojects {
     repositories {
         google()
@@ -16,12 +27,4 @@ subprojects {
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }
-buildscript {
-    repositories {
-        google()
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.4' // Mettez à jour si nécessaire
-    }
-}
+
