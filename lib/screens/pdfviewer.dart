@@ -15,7 +15,7 @@ class _PDFViewerSectionState extends State<PDFViewerSection> {
   List<String> _pdfFiles = [];
   List<String> _filteredFiles = [];
   bool _isSearching = false;
-  bool _isLoading = true; // Ajout d’un indicateur de chargement
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -34,7 +34,7 @@ class _PDFViewerSectionState extends State<PDFViewerSection> {
       Map<String, dynamic> manifestMap = json.decode(manifestContent);
 
       List<String> assetPaths = manifestMap.keys
-          .where((String key) => key.endsWith('.pdf')) // Filtre uniquement les PDF
+          .where((String key) => key.endsWith('.pdf'))
           .toList();
 
       setState(() {
@@ -64,71 +64,80 @@ class _PDFViewerSectionState extends State<PDFViewerSection> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-    title: !_isSearching
-        ? const Text("Lois électorales", style: TextStyle(color: Colors.white, fontSize: 18))
-        : child: TextField(
-              onChanged: _filterFiles,
-              decoration: InputDecoration(
-                labelText: 'Rechercher',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+        title: const Text("Lois électorales", style: TextStyle(color: Colors.white, fontSize: 18)),
+        backgroundColor: Colors.blue,
+        elevation: 0,
+        actions: [
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _isSearching = !_isSearching;
+                _filteredFiles = _pdfFiles;
+              });
+            },
+            icon: Icon(_isSearching ? Icons.cancel : Icons.search),
+          ),
+        ],
+      ),
+
+      body: Column(
+        children: [
+          // Champ de recherche en haut de la liste
+          if (_isSearching)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                onChanged: _filterFiles,
+                decoration: InputDecoration(
+                  labelText: 'Rechercher',
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
                 ),
               ),
             ),
-            
-        
-    backgroundColor: Colors.blue,
-    elevation: 0,
-    actions: [
-      IconButton(
-        onPressed: () {
-          setState(() {
-            _isSearching = !_isSearching;
-            _filteredFiles = _pdfFiles;
-          });
-        },
-        icon: Icon(_isSearching ? Icons.cancel : Icons.search),
-      )
-    ],
-  ),
 
-
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator()) // Chargement en cours
-          : _filteredFiles.isEmpty
-              ? const Center(
-                  child: Text(
-                    "Aucun fichier PDF trouvé",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                )
-              : ListView.builder(
-                  itemCount: _filteredFiles.length,
-                  itemBuilder: (context, index) {
-                    String filePath = _filteredFiles[index];
-                    String fileName = path.basename(filePath);
-                    return Card(
-                      color: Colors.white,
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      child: ListTile(
-                        title: Text(fileName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        leading: const Icon(Icons.picture_as_pdf, color: Colors.red, size: 30),
-                        trailing: const Icon(Icons.arrow_forward_ios, size: 18),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PDFViewScreen(pdfPath: filePath, pdfName: fileName),
+          // Liste des fichiers PDF
+          Expanded(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _filteredFiles.isEmpty
+                    ? const Center(
+                        child: Text(
+                          "Aucun fichier PDF trouvé",
+                          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: _filteredFiles.length,
+                        itemBuilder: (context, index) {
+                          String filePath = _filteredFiles[index];
+                          String fileName = path.basename(filePath);
+                          return Card(
+                            color: Colors.white,
+                            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            child: ListTile(
+                              title: Text(fileName, style: const TextStyle(fontWeight: FontWeight.bold)),
+                              leading: const Icon(Icons.picture_as_pdf, color: Colors.red, size: 30),
+                              trailing: const Icon(Icons.arrow_forward_ios, size: 18),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PDFViewScreen(pdfPath: filePath, pdfName: fileName),
+                                  ),
+                                );
+                              },
                             ),
                           );
                         },
                       ),
-                    );
-                  },
-                ),
+          ),
+        ],
+      ),
 
       floatingActionButton: FloatingActionButton(
         onPressed: () => setState(() => getFiles()),
