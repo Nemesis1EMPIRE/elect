@@ -130,13 +130,22 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
       appBar: AppBar(title: const Text("Lecture Vidéo")),
       body: Center(
         child: _controller.value.isInitialized
-            ? Stack(
+            ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: VideoPlayer(_controller),
-                  ),
+                  SizedBox(
+                      width: double.infinity,
+                      height: 300, // Hauteur fixe pour éviter les distorsions
+                      child: FittedBox(
+                        fit: BoxFit.contain, // ou BoxFit.cover selon ton besoin
+                        child: SizedBox(
+                          width: _controller.value.size.width,
+                          height: _controller.value.size.height,
+                          child: VideoPlayer(_controller),
+                        ),
+                      ),
+                    ),
+
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
