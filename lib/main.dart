@@ -22,7 +22,7 @@ class Elect241App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: MainScreen(),
     );
   }
 }
@@ -94,50 +94,4 @@ class BottomNavBar extends StatelessWidget {
   }
 }
 
-class SplashScreen extends StatefulWidget {
-  @override
-  _SplashScreenState createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends State<SplashScreen> {
-  late VideoPlayerController _controller;
-  late Future<void> _initializeVideoPlayerFuture;
-
-  final String videoUrl = 'assets/vid.mp4'; // Test URL
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.network(videoUrl)
-      ..initialize().then((_) {
-        setState(() {});
-        _controller.play();
-      });
-
-    Timer(const Duration(seconds: 5), () {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MainScreen()));
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      
-      body: Center(
-        child: _controller.value.isInitialized
-            ? AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: VideoPlayer(_controller),
-              )
-            : const CircularProgressIndicator(),
-      ),
-    );
-  }
-}
 
