@@ -1,179 +1,107 @@
-import 'dart:io';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:flutter/services.dart' show rootBundle;
 
-class VideoListScreen extends StatefulWidget {
-  const VideoListScreen({super.key});
+void main() => runApp(const VideoPlayerApp());
 
-  @override
-  _VideoListScreenState createState() => _VideoListScreenState();
-}
-
-class _VideoListScreenState extends State<VideoListScreen> {
-  List<Map<String, String>> videos = [
-    {"title": "Nature", "path": "assets/vid/video1.mp4", "thumbnail": "assets/images/elect.png"},
-    {"title": "Ville", "path": "assets/vid/video2.mp4", "thumbnail": "assets/images/elect.png"},
-    {"title": "Mer", "path": "assets/vid/video3.mp4", "thumbnail": "assets/images/elect.png"},
-  ];
-
-  List<Map<String, String>> filteredVideos = [];
-  
-  @override
-  void initState() {
-    super.initState();
-    filteredVideos = videos;
-  }
-
-  void _filterVideos(String query) {
-    setState(() {
-      filteredVideos = videos.where((video) {
-        return video["title"]!.toLowerCase().contains(query.toLowerCase());
-      }).toList();
-    });
-  }
-
-  Future<String> _loadVideo(String assetPath) async {
-    final tempDir = await getTemporaryDirectory();
-    final tempVideoFile = File("${tempDir.path}/${assetPath.split('/').last}");
-    
-    if (!await tempVideoFile.exists()) {
-      final byteData = await rootBundle.load(assetPath);
-      await tempVideoFile.writeAsBytes(byteData.buffer.asUint8List(), flush: true);
-    }
-
-    return tempVideoFile.path;
-  }
+class VideoPlayerApp extends StatelessWidget {
+  const VideoPlayerApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Liste des Vidéos")),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Rechercher une vidéo...",
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-              ),
-              onChanged: _filterVideos,
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: filteredVideos.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  leading: Image.asset(
-                    filteredVideos[index]["thumbnail"]!,
-                    width: 60,
-                    height: 60,
-                    fit: BoxFit.cover,
-                  ),
-                  title: Text(filteredVideos[index]["title"]!),
-                  onTap: () async {
-                    String videoPath = await _loadVideo(filteredVideos[index]["path"]!);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => VideoPlayerScreen(videoPath: videoPath),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+    return const MaterialApp(
+      title: 'Video Player Demo',
+      home: VideoPlayerScreen(),
     );
   }
 }
 
 class VideoPlayerScreen extends StatefulWidget {
-  final String videoPath;
-
-  const VideoPlayerScreen({super.key, required this.videoPath});
+  const VideoPlayerScreen({super.key});
 
   @override
-  _VideoPlayerScreenState createState() => _VideoPlayerScreenState();
+  State<VideoPlayerScreen> createState() => _VideoPlayerScreenState();
 }
 
 class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
   late VideoPlayerController _controller;
+  late Future<void> _initializeVideoPlayerFuture;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.file(File(widget.videoPath))
-      ..initialize().then((_) {
-        setState(() {});
-        _controller.play();
-      });
+
+    // Create and store the VideoPlayerController. The VideoPlayerController
+    // offers several different constructors to play videos from assets, files,
+    // or the internet.
+    _controller = VideoPlayerController.networkUrl(
+      Uri.parse(
+        'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+      ),
+    );
+
+    // Initialize the controller and store the Future for later use.
+    _initializeVideoPlayerFuture = _controller.initialize();
+
+    // Use the controller to loop the video.
+    _controller.setLooping(true);
   }
 
   @override
   void dispose() {
+    // Ensure disposing of the VideoPlayerController to free up resources.
     _controller.dispose();
+
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Lecture Vidéo")),
-      body: Center(
-        child: _controller.value.isInitialized
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                      width: double.infinity,
-                      height: 300, // Hauteur fixe pour éviter les distorsions
-                      child: FittedBox(
-                        fit: BoxFit.contain, // ou BoxFit.cover selon ton besoin
-                        child: SizedBox(
-                          width: _controller.value.size.width,
-                          height: _controller.value.size.height,
-                          child: VideoPlayer(_controller),
-                        ),
-                      ),
-                    ),
-
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: Icon(
-                          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _controller.value.isPlaying ? _controller.pause() : _controller.play();
-                          });
-                        },
-                      ),
-                      IconButton(
-                        icon: const Icon(Icons.stop),
-                        onPressed: () {
-                          setState(() {
-                            _controller.pause();
-                            _controller.seekTo(Duration.zero);
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            : const CircularProgressIndicator(),
+      appBar: AppBar(
+        title: const Text('Butterfly Video'),
+      ),
+      // Use a FutureBuilder to display a loading spinner while waiting for the
+      // VideoPlayerController to finish initializing.
+      body: FutureBuilder(
+        future: _initializeVideoPlayerFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            // If the VideoPlayerController has finished initialization, use
+            // the data it provides to limit the aspect ratio of the video.
+            return AspectRatio(
+              aspectRatio: _controller.value.aspectRatio,
+              // Use the VideoPlayer widget to display the video.
+              child: VideoPlayer(_controller),
+            );
+          } else {
+            // If the VideoPlayerController is still initializing, show a
+            // loading spinner.
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Wrap the play or pause in a call to `setState`. This ensures the
+          // correct icon is shown.
+          setState(() {
+            // If the video is playing, pause it.
+            if (_controller.value.isPlaying) {
+              _controller.pause();
+            } else {
+              // If the video is paused, play it.
+              _controller.play();
+            }
+          });
+        },
+        // Display the correct icon depending on the state of the player.
+        child: Icon(
+          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+        ),
       ),
     );
   }
