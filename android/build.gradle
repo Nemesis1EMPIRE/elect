@@ -3,9 +3,11 @@ buildscript {
         google()
         mavenCentral()
     }
+
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.0' // Vérifiez que c'est bien dans ce fichier
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.21'
+        // Définir le classpath pour les outils Android Gradle
+        classpath 'com.android.tools.build:gradle:7.0.0'
+        classpath 'dev.flutter:flutter-gradle-plugin' // Gradle Flutter Plugin
     }
 }
 
