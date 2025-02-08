@@ -63,9 +63,7 @@ class _PDFViewerSectionState extends State<PDFViewerSection> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: PreferredSize(
-  preferredSize: const Size.fromHeight(40), // 📌 Réduction de la hauteur de l'AppBar
-  child: AppBar(
+      appBar: AppBar(
     title: !_isSearching
         ? const Text("Lois électorales", style: TextStyle(color: Colors.white, fontSize: 18))
         : TextField(
@@ -89,7 +87,7 @@ class _PDFViewerSectionState extends State<PDFViewerSection> {
       )
     ],
   ),
-),
+
 
       body: _isLoading
           ? const Center(child: CircularProgressIndicator()) // Chargement en cours
