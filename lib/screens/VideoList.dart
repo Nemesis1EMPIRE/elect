@@ -1,7 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
+void main() {
+  runApp(MyApp());
+}
 
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Lecteur de Vidéos',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: VideoListPage(),
+    );
+  }
+}
 
 class VideoListPage extends StatefulWidget {
   @override
@@ -11,24 +26,14 @@ class VideoListPage extends StatefulWidget {
 class _VideoListPageState extends State<VideoListPage> {
   final List<Map<String, String>> videos = [
     {
-      'title': 'test',
-      'url': 'https://drive.google.com/file/d/1IMi6oa83sQ_eVhaOJGp17IQPTabKJFuV/view?usp=sharing',
-      'thumbnail': 'assets/images/elect.png',
-    },
-    {
-      'title': 'Vidéo 2',
-      'url': 'assets/vid/video.mp4',
+      'title': 'Vidéo 1',
+      'videoPath': 'assets/video.mp4',
       'thumbnail': 'assets/images/elect.jpeg',
     },
     {
-      'title': 'Vidéo 3',
-      'url': 'https://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_5mb.mp4',
-      'thumbnail': 'https://via.placeholder.com/150',
-    },
-    {
-      'title': 'Vidéo 4',
-      'url': 'https://www.sample-videos.com/video123/mp4/720/big_buck_bunny_720p_10mb.mp4',
-      'thumbnail': 'https://via.placeholder.com/150',
+      'title': 'Vidéo 2',
+      'videoPath': 'assets/vid/video2.mp4',
+      'thumbnail': 'assets/images/elect.png',
     },
   ];
 
@@ -76,7 +81,7 @@ class _VideoListPageState extends State<VideoListPage> {
               itemCount: filteredVideos.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  leading: Image.network(
+                  leading: Image.asset(
                     filteredVideos[index]['thumbnail']!,
                     width: 50,
                     height: 50,
@@ -91,7 +96,7 @@ class _VideoListPageState extends State<VideoListPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => VideoPlayerPage(
-                          videoUrl: filteredVideos[index]['url']!,
+                          videoPath: filteredVideos[index]['videoPath']!,
                         ),
                       ),
                     );
@@ -107,9 +112,9 @@ class _VideoListPageState extends State<VideoListPage> {
 }
 
 class VideoPlayerPage extends StatefulWidget {
-  final String videoUrl;
+  final String videoPath;
 
-  VideoPlayerPage({required this.videoUrl});
+  VideoPlayerPage({required this.videoPath});
 
   @override
   _VideoPlayerPageState createState() => _VideoPlayerPageState();
@@ -124,7 +129,7 @@ class _VideoPlayerPageState extends State<VideoPlayerPage> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(widget.videoUrl)
+    _controller = VideoPlayerController.asset(widget.videoPath)
       ..initialize().then((_) {
         setState(() {});
       }).catchError((error) {
