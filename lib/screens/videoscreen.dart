@@ -37,7 +37,7 @@ class _VideoPlayerScreenState extends State<VideoPlayerScreen> {
     // or the internet.
     _controller = VideoPlayerController.networkUrl(
       Uri.parse(
-        'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
+        'https://github.com/Nemesis1EMPIRE/elect/blob/main/assets/video.mp4',
       ),
     );
 
