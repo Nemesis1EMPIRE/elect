@@ -32,13 +32,11 @@ class _FAQScreenState extends State<FAQScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(40), // 📌 Réduction de la hauteur de l'AppBar
-        child: AppBar(
+      appBar: AppBar(
           title: const Text("Feed", style: TextStyle(color: Colors.white, fontSize: 18)),
           backgroundColor: Colors.blue,
         ),
-      ),
+      
       body: Column(
         children: [
           // 📌 Champ pour poser une question
