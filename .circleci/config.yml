@@ -3,17 +3,24 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: cirrusci/flutter:stable  # Image Docker avec Flutter préinstallé
+      - image: cimg/android:2023.04  # Image CircleCI pour Android
+    environment:
+      GRADLE_USER_HOME: /home/circleci/.gradle
     steps:
-      - checkout  # Récupère ton code depuis GitHub/GitLab
+      - checkout
+      - restore_cache:
+          key: gradle-{{ checksum "build.gradle" }}
       - run:
-          name: Vérifier Flutter
-          command: flutter --version
-      - run:
-          name: Télécharger les dépendances
-          command: flutter pub get
+          name: Donner les permissions à Gradle
+          command: chmod +x gradlew
       - run:
           name: Compiler l'APK
-          command: flutter build apk --release
+          command: ./gradlew assembleRelease
       - store_artifacts:
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: app/build/outputs/apk/release/app-release.apk
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+      - build
